@@ -119,11 +119,40 @@ app.get('/', function (req, res) {
 });
 
 app.get('/health', function (req, res) {
-    res.json({ ok: true, pending: db.schedule.length, subscriptions: Object.keys(db.subscriptions).length });
+    res.json({
+        ok: true,
+        pending: db.schedule.length,
+        subscriptions: Object.keys(db.subscriptions).length,
+        recentSends: sendLog.slice(-10)
+    });
 });
 
 app.get('/api/vapid-public-key', function (req, res) {
     res.json({ key: VAPID_PUBLIC_KEY });
+});
+
+// Visit this URL directly in a browser to trigger an immediate test push to
+// every subscribed device, and see the result right away — no waiting for a
+// scheduled time. Useful for diagnosing delivery issues.
+app.get('/api/test-push', function (req, res) {
+    var deviceIds = Object.keys(db.subscriptions);
+    if (!deviceIds.length) return res.json({ ok: false, error: 'No subscribed devices yet.' });
+    var results = [];
+    var remaining = deviceIds.length;
+    deviceIds.forEach(function (deviceId) {
+        var sub = db.subscriptions[deviceId];
+        var payload = JSON.stringify({ title: 'Test Push', body: 'If you see this as a phone notification, background push is working correctly.' });
+        webpush.sendNotification(sub, payload).then(function () {
+            results.push({ deviceId: deviceId, ok: true });
+            logSend({ id: 'manual-test', ok: true });
+            if (--remaining === 0) res.json({ ok: true, results: results });
+        }).catch(function (err) {
+            var info = { deviceId: deviceId, ok: false, statusCode: err && err.statusCode, reason: err && (err.body || err.message) };
+            results.push(info);
+            logSend({ id: 'manual-test', ok: false, statusCode: info.statusCode, reason: info.reason });
+            if (--remaining === 0) res.json({ ok: true, results: results });
+        });
+    });
 });
 
 // Save/replace a device's push subscription. tzOffsetMinutes (from the
@@ -183,6 +212,13 @@ app.post('/api/cancel', function (req, res) {
 // Every 10 seconds, check for anything due and push it. This is what keeps
 // running in the background on the server, totally independent of whether
 // your phone's browser is open.
+var sendLog = []; // recent send attempts, for diagnosis via /health
+function logSend(entry) {
+    entry.at = new Date().toISOString();
+    sendLog.push(entry);
+    if (sendLog.length > 30) sendLog.shift();
+    console.log('[push]', JSON.stringify(entry));
+}
 setInterval(function () {
     // Independent of any app ever opening: make sure every subscribed device
     // has today's fixed reminders queued (no-ops instantly once already done
@@ -198,9 +234,12 @@ setInterval(function () {
     saveData(db);
     due.forEach(function (item) {
         var sub = db.subscriptions[item.deviceId];
-        if (!sub) return;
+        if (!sub) { logSend({ id: item.id, ok: false, reason: 'no subscription for device' }); return; }
         var payload = JSON.stringify({ title: item.title, body: item.body });
-        webpush.sendNotification(sub, payload).catch(function (err) {
+        webpush.sendNotification(sub, payload).then(function () {
+            logSend({ id: item.id, ok: true });
+        }).catch(function (err) {
+            logSend({ id: item.id, ok: false, statusCode: err && err.statusCode, reason: err && (err.body || err.message) });
             // 410/404 means the subscription is no longer valid (e.g. user cleared
             // site data) — remove it so we stop trying.
             if (err && (err.statusCode === 410 || err.statusCode === 404)) {
