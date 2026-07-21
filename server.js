@@ -66,6 +66,7 @@ const FIXED_DAILY_ITEMS = [
     { key: 'acc-2045', hour: 20, minute: 45, title: '🔒 Accountability Check', body: "Are you studying right now? Open the app to answer." },
     { key: 'acc-2110', hour: 21, minute: 10, title: '🔒 Accountability Check', body: "Are you studying right now? Open the app to answer." },
     { key: 'acc-library', hour: 22, minute: 15, title: '🔒 Accountability Check', body: "It's 10:15 PM — time to leave the library and head home. Open the app to confirm." },
+    { key: 'acc-daily-review', hour: 23, minute: 50, title: '🔒 End-of-Day Reflection', body: "What went well today, what went badly, and what will you improve tomorrow? Open the app to write it." },
 
     { key: 'block-block1', hour: 13, minute: 0, title: '📋 Block 1 (Morning) Check-In', body: 'How much of Block 1 (Morning) have you completed today?' },
     { key: 'block-block2', hour: 18, minute: 0, title: '📋 Block 2 (Afternoon) Check-In', body: 'How much of Block 2 (Afternoon) have you completed today?' },
