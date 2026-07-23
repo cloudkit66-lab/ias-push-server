@@ -62,11 +62,10 @@ const FIXED_DAILY_ITEMS = [
     { key: 'acc-morning', hour: 8, minute: 0, title: '🔒 Accountability Check', body: "Have you started your studies today? Open the app to confirm." },
     { key: 'acc-noon', hour: 12, minute: 0, title: '🔒 Accountability Check', body: "Are you studying right now? Open the app to answer." },
     { key: 'acc-midday', hour: 16, minute: 0, title: '🔒 Accountability Check', body: "Are you actually studying right now? Open the app to answer." },
-    { key: 'acc-exercise', hour: 19, minute: 0, title: '🔒 Accountability Check', body: "It's 7 PM — time to go for exercise. Open the app to confirm." },
+    { key: 'acc-exercise', hour: 19, minute: 0, title: '🔒 Accountability Check', body: "Have you finished your exercise today? Open the app to confirm." },
     { key: 'acc-2045', hour: 20, minute: 45, title: '🔒 Accountability Check', body: "Are you studying right now? Open the app to answer." },
     { key: 'acc-2110', hour: 21, minute: 10, title: '🔒 Accountability Check', body: "Are you studying right now? Open the app to answer." },
-    { key: 'acc-library', hour: 22, minute: 15, title: '🔒 Accountability Check', body: "It's 10:15 PM — time to leave the library and head home. Open the app to confirm." },
-    { key: 'acc-daily-review', hour: 23, minute: 50, title: '🔒 End-of-Day Reflection', body: "What went well today, what went badly, and what will you improve tomorrow? Open the app to write it." },
+    { key: 'acc-daily-review', hour: 23, minute: 50, title: '🔒 Reflection Check', body: "Have you written today's reflection? Are you satisfied with how today went? Open the app to confirm." },
 
     { key: 'block-block1', hour: 13, minute: 0, title: '📋 Block 1 (Morning) Check-In', body: 'How much of Block 1 (Morning) have you completed today?' },
     { key: 'block-block2', hour: 18, minute: 0, title: '📋 Block 2 (Afternoon) Check-In', body: 'How much of Block 2 (Afternoon) have you completed today?' },
